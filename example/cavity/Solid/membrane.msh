@@ -1,0 +1,14 @@
+$MeshFormat
+2.2 0 8
+$EndMeshFormat
+$PhysicalNames
+2
+1 1 "fixAll"
+2 2 "Membrane"
+$EndPhysicalNames
+$Nodes
+3
+1 0 0 0
+2 1 0 0
+3 1 0 1
+$EndNodes

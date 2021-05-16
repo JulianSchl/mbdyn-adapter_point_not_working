@@ -1,0 +1,68 @@
+
+#-----------------------------------------------------------------------------
+# [DATA BLOCK]
+
+begin: data;
+    problem: initial value;
+end: data;
+
+#-----------------------------------------------------------------------------
+# [INITIAL VALUE BLOCK]
+
+begin: initial value;
+    initial time: 0;
+    final time: forever;
+    time step: 0.05;
+    method: ms, 0.6;
+    tolerance: 0.0001;
+    max iterations: 300;
+    linear solver: umfpack;
+    output: iterations;
+    threads: auto;
+    modify residual test;
+end: initial value;
+
+#-----------------------------------------------------------------------------
+# [CONTROL DATA BLOCK]
+
+begin: control data;
+    beams: 0;
+    forces: 1;
+    joints: 4;
+    plates: 0;
+    rigid bodies: 3;
+    structural nodes: 4;
+    default output: none, plates, structural nodes;
+    output frequency: 10;
+end: control data;
+
+set: real Et          = 250.0;
+set: real nut         = 0.0;
+set: real t           = 0.002;
+set: real rho         = 500.0;
+set: real C           = 1e-06;
+
+#-----------------------------------------------------------------------------
+# [NODES BLOCK]
+
+begin: nodes;
+    structural: 0, dynamic, 0.0, 0.0, 0.0, eye, null, null;
+    structural: 1, dynamic, 1.0, 0.0, 0.0, eye, null, null;
+    structural: 2, dynamic, 1.0, 0.0, 1.0, eye, null, null;
+    structural: 3, static, 0.0,-5.0, 0.0, eye, null, null, output, no;
+end: nodes;
+
+#-----------------------------------------------------------------------------
+# [ELEMENTS BLOCK]
+
+begin: elements;
+    body: 60, 0, 0.0*rho*t, null, diag, 0.0, 0.0, 0.0;
+    body: 61, 1, 0.0*rho*t, null, diag, 0.0, 0.0, 0.0;
+    body: 62, 2, 0.0*rho*t, null, diag, 0.0, 0.0, 0.0;
+    force: 50, external structural, socket, create, yes, path, "membrane.sock", no signal, sleep time, 0.05, coupling, tight, orientation, none, accelerations, no, 3,
+0,1,2;
+    joint: 20, clamp, 3, node, node;
+    joint: 21, deformable displacement joint, 3, null, 0, null, linear viscous, C;
+    joint: 22, deformable displacement joint, 3, null, 1, null, linear viscous, C;
+    joint: 23, deformable displacement joint, 3, null, 2, null, linear viscous, C;
+end: elements;
